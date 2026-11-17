@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Requisição de Equipamentos — EPBJC</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">EPBJC</span>
+      <span class="brand-sub">Requisição de Equipamentos</span>
+    </div>
+    <div id="userBox" class="user-box hidden">
+      <span id="userName"></span>
+      <button id="logoutBtn" class="btn-ghost">Terminar sessão</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- LOGIN -->
+    <section id="loginView" class="view">
+      <div class="login-card">
+        <h1>Pedir equipamento emprestado</h1>
+        <p class="muted">Inicia sessão com a tua conta institucional para veres o formulário e o teu histórico de pedidos.</p>
+        <button id="loginBtn" class="btn-primary">Entrar com Microsoft</button>
+        <p id="loginError" class="error hidden"></p>
+      </div>
+    </section>
+
+    <!-- APP -->
+    <section id="appView" class="view hidden">
+
+      <div class="grid">
+
+        <div class="panel">
+          <h2>Novo pedido</h2>
+          <form id="requestForm">
+            <label for="equipamento">Equipamento</label>
+            <select id="equipamento" required>
+              <option value="" disabled selected>Escolhe um equipamento</option>
+              <option value="Portátil01">Portátil 01</option>
+              <option value="Portátil02">Portátil 02</option>
+              <option value="Tablet01">Tablet 01</option>
+              <option value="Tablet02">Tablet 02</option>
+              <option value="Projetor01">Projetor 01</option>
+            </select>
+
+            <label for="dataPedido">Data do pedido</label>
+            <input type="date" id="dataPedido" required />
+
+            <label for="devolucaoPrevista">Devolução prevista</label>
+            <input type="date" id="devolucaoPrevista" required />
+
+            <label for="observacoes">Observações <span class="muted">(opcional, até 500 caracteres)</span></label>
+            <textarea id="observacoes" maxlength="500" rows="3" placeholder="Alguma informação adicional sobre o pedido…"></textarea>
+
+            <button type="submit" class="btn-primary">Submeter pedido</button>
+            <p id="formError" class="error hidden"></p>
+            <p id="formSuccess" class="success hidden"></p>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>O meu histórico</h2>
+          <div id="historyList" class="history-list">
+            <p class="muted">A carregar pedidos…</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Escola Profissional Bento de Jesus Caraça · Sistema de Requisição de Equipamentos</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
