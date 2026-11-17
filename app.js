@@ -1,3 +1,4 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
@@ -16,7 +17,7 @@ import {
   onSnapshot,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+ 
 // Substitui pelos valores reais do teu projeto Firebase (Project settings → Your apps → Web app).
 // Estes valores são públicos por natureza; a segurança vem das Firestore Rules, não daqui.
 const firebaseConfig = {
@@ -27,16 +28,16 @@ const firebaseConfig = {
   messagingSenderId: "443137521957",
   appId: "1:443137521957:web:48d76aa3def0d8baefc2cc",
 };
-
+ 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
+ 
 // ID do provider Microsoft tal como configurado em Authentication → Sign-in method.
 const provider = new OAuthProvider("microsoft.com");
 // Restringe ao tenant institucional, se aplicável — substitui pelo Tenant ID real do Entra.
 provider.setCustomParameters({ tenant: "4334e4b0-48f4-4a76-ae54-cec847437a72" });
-
+ 
 const loginView = document.getElementById("loginView");
 const appView = document.getElementById("appView");
 const userBox = document.getElementById("userBox");
@@ -48,9 +49,9 @@ const requestForm = document.getElementById("requestForm");
 const formError = document.getElementById("formError");
 const formSuccess = document.getElementById("formSuccess");
 const historyList = document.getElementById("historyList");
-
+ 
 let unsubscribeHistory = null;
-
+ 
 loginBtn.addEventListener("click", async () => {
   loginError.classList.add("hidden");
   try {
@@ -61,11 +62,11 @@ loginBtn.addEventListener("click", async () => {
     console.error(err);
   }
 });
-
+ 
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
 });
-
+ 
 onAuthStateChanged(auth, (user) => {
   if (user) {
     showApp(user);
@@ -73,7 +74,7 @@ onAuthStateChanged(auth, (user) => {
     showLogin();
   }
 });
-
+ 
 function showLogin() {
   loginView.classList.remove("hidden");
   appView.classList.add("hidden");
@@ -83,42 +84,45 @@ function showLogin() {
     unsubscribeHistory = null;
   }
 }
-
+ 
 function showApp(user) {
   loginView.classList.add("hidden");
   appView.classList.remove("hidden");
   userBox.classList.remove("hidden");
   userName.textContent = user.displayName || user.email;
   watchHistory(user.uid);
+ 
+  // DEBUG TEMPORÁRIO — remove depois de confirmares email_verified.
+  user.getIdTokenResult(true).then((t) => console.log("TOKEN CLAIMS:", t.claims));
 }
-
+ 
 requestForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   formError.classList.add("hidden");
   formSuccess.classList.add("hidden");
-
+ 
   const user = auth.currentUser;
   if (!user) return;
-
+ 
   const equipamento = document.getElementById("equipamento").value;
   const dataPedido = document.getElementById("dataPedido").value;
   const devolucaoPrevista = document.getElementById("devolucaoPrevista").value;
   const observacoes = document.getElementById("observacoes").value.trim();
-
+ 
   if (!equipamento || !dataPedido || !devolucaoPrevista) {
     formError.textContent = "Preenche o equipamento e as duas datas.";
     formError.classList.remove("hidden");
     return;
   }
-
+ 
   if (devolucaoPrevista < dataPedido) {
     formError.textContent = "A devolução prevista não pode ser anterior à data do pedido.";
     formError.classList.remove("hidden");
     return;
   }
-
+ 
   const codigo = gerarCodigo();
-
+ 
   try {
     await addDoc(collection(db, "requisicoes"), {
       codigo,
@@ -141,7 +145,7 @@ requestForm.addEventListener("submit", async (e) => {
     console.error(err);
   }
 });
-
+ 
 function gerarCodigo() {
   const hoje = new Date();
   const yyyy = hoje.getFullYear();
@@ -150,16 +154,16 @@ function gerarCodigo() {
   const sufixo = Math.random().toString(16).slice(2, 6).toUpperCase();
   return `REQ-${yyyy}${mm}${dd}-${sufixo}`;
 }
-
+ 
 function watchHistory(uid) {
   if (unsubscribeHistory) unsubscribeHistory();
-
+ 
   const q = query(
     collection(db, "requisicoes"),
     where("uid", "==", uid),
     orderBy("criadoEm", "desc")
   );
-
+ 
   unsubscribeHistory = onSnapshot(
     q,
     (snapshot) => {
@@ -178,18 +182,18 @@ function watchHistory(uid) {
     }
   );
 }
-
+ 
 function renderHistoryItem(pedido) {
   const el = document.createElement("div");
   el.className = "history-item";
-
+ 
   const badgeClass = {
     Pendente: "badge-pendente",
     "Em empréstimo": "badge-emprestimo",
     Devolvido: "badge-devolvido",
     Recusado: "badge-recusado",
   }[pedido.estado] || "badge-pendente";
-
+ 
   el.innerHTML = `
     <div class="top-row">
       <span>${escapeHtml(pedido.equipamento)} · ${escapeHtml(pedido.codigo)}</span>
@@ -200,7 +204,7 @@ function renderHistoryItem(pedido) {
   `;
   return el;
 }
-
+ 
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str ?? "";
