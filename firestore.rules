@@ -8,8 +8,9 @@ service cloud.firestore {
     }
 
     function estaAutorizado() {
+      // email_verified não é fiável para contas Microsoft via Firebase (confirmado em testes);
+      // a autorização assenta no domínio do tenant + lista branca authorizedUsers.
       return request.auth != null
-        && request.auth.token.email_verified == true
         && exists(/databases/$(database)/documents/authorizedUsers/$(emailNormalizado()))
         && get(/databases/$(database)/documents/authorizedUsers/$(emailNormalizado())).data.active == true;
     }
